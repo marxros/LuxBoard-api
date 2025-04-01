@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CreateBillUseCase } from './create-bill.use-case.service';
+import { CreateBillUseCase } from './create-bill.use-case';
 
 describe('CreateBillService', () => {
   let service: CreateBillUseCase;
