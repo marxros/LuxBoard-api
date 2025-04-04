@@ -1,73 +1,117 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Lumi - Teste Técnico | Desenvolvedor Full Stack Pleno
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este repositório apresenta a solução para o desafio de extração e exibição de dados de faturas de energia elétrica, utilizando uma arquitetura escalável baseada em Clean Architecture com NestJS, Prisma e PostgreSQL.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 🚀 Tecnologias
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Backend:** [NestJS](https://nestjs.com/)
+- **ORM:** Prisma
+- **Banco de dados:** PostgreSQL
+- **PDF Parser:** pdf-parse
+- **Arquitetura:** Clean Architecture
+- **Containerização:** Docker + Docker Compose
 
-## Installation
+---
+
+## 📦 Como rodar o projeto
+
+> Certifique-se de ter o Docker e Docker Compose instalados.
 
 ```bash
-$ npm install
+# Clone o repositório
+$ git clone https://github.com/seu-usuario/teste-lumi.git
+$ cd teste-lumi/backend
+
+# Suba a aplicação
+$ docker-compose up --build
 ```
 
-## Running the app
+A API ficará disponível em `http://localhost:3000`
 
-```bash
-# development
-$ npm run start
+---
 
-# watch mode
-$ npm run start:dev
+## 🔧 Endpoints principais
 
-# production mode
-$ npm run start:prod
+### 🔹 Upload de Fatura (PDF)
+
+```http
+POST /invoices/upload
+Content-Type: multipart/form-data
+Campo: file
 ```
 
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+**Resposta esperada:**
+```json
+{
+  "message": "Fatura processada com sucesso",
+  "client": {
+    "id": "uuid",
+    "number": "123456789"
+  },
+  "bill": {
+    "id": "uuid",
+    "referenceMonth": "2024-04-01T00:00:00.000Z",
+    "consumoTotal": 526,
+    "economiaGD": 0
+  }
+}
 ```
 
-## Support
+### 🔹 Criar Cliente manualmente
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```http
+POST /clients
+```
 
-## Stay in touch
+```json
+{
+  "number": "123456789"
+}
+```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### 🔹 Criar Fatura manualmente
 
-## License
+```http
+POST /bills
+```
 
-Nest is [MIT licensed](LICENSE).
+```json
+{
+  "clientId": "uuid-do-cliente",
+  "referenceMonth": "2024-04-01",
+  "energiaEletricaKwh": 50,
+  "energiaEletricaValor": 100,
+  "energiaSceeKwh": 476,
+  "energiaSceeValor": 200,
+  "energiaCompensadaKwh": 0,
+  "energiaCompensadaValor": 0,
+  "contribIlumPublicaValor": 10
+}
+```
+
+---
+
+## 💡 Arquitetura do Backend (Clean Architecture)
+
+```txt
+modules/
+└── bills/
+    ├── application/
+    │   └── use-cases/
+    │       └── process-invoice.use-case.ts
+    ├── domain/
+    │   ├── entities/
+    │   ├── repositories/
+    │   └── services/
+    ├── infra/
+    │   └── services/
+    └── interface/
+        └── controllers/
+```
+
+- `interface`: camada que lida com HTTP
+- `application`: onde ficam os use-cases
+- `domain`: entidades, interfaces e contratos
+- `infra`: implementações concretas (ex: parser PDF)
