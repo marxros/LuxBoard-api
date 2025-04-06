@@ -78,4 +78,48 @@ export class BillPrismaRepository implements BillRepository {
       data.filePath,
     );
   }
+
+  async findMany(params?: {
+    clientId?: string;
+    start?: Date;
+    end?: Date;
+  }): Promise<Bill[]> {
+    const where: any = {};
+
+    if (params?.clientId) {
+      where.clientId = params.clientId;
+    }
+
+    if (params?.start || params?.end) {
+      where.referenceMonth = {
+        gte: params.start ?? new Date('1900-01-01'),
+        lte: params.end ?? new Date(),
+      };
+    }
+
+    const result = await this.prisma.bill.findMany({
+      where,
+      orderBy: { referenceMonth: 'asc' },
+    });
+
+    return result.map(
+      (b) =>
+        new Bill(
+          b.id,
+          b.clientId,
+          b.referenceMonth,
+          b.energiaEletricaKwh,
+          b.energiaEletricaValor,
+          b.energiaSceeKwh,
+          b.energiaSceeValor,
+          b.energiaCompensadaKwh,
+          b.energiaCompensadaValor,
+          b.contribIlumPublicaValor,
+          b.consumoTotal,
+          b.valorTotalSemGD,
+          b.economiaGD,
+          b.filePath,
+        ),
+    );
+  }
 }

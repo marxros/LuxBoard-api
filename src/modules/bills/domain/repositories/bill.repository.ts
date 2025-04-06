@@ -9,4 +9,9 @@ export abstract class BillRepository {
   ): Promise<Bill | null>;
   abstract update(bill: Bill): Promise<void>;
   abstract findById(id: string): Promise<Bill | null>;
+  abstract findMany(params?: {
+    clientId?: string;
+    start?: Date;
+    end?: Date;
+  }): Promise<Bill[]>;
 }
