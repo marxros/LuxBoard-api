@@ -7,12 +7,14 @@ import { InvoicesController } from './interface/controllers/invoices/invoices.co
 import { PdfInvoiceParserService } from './infra/services/pdf-invoice-parser.service';
 import { ProcessInvoiceUseCase } from './application/use-cases/process-invoice/process-invoice.use-case';
 import { ClientPrismaRepository } from '../clients/infra/prisma/client.prisma.repository';
+import { GetBillsUseCase } from './application/use-cases/get-bill/get-bills.use-case';
 
 @Module({
   controllers: [BillsController, InvoicesController],
   providers: [
     PrismaService,
     CreateBillUseCase,
+    GetBillsUseCase,
     PdfInvoiceParserService,
     ProcessInvoiceUseCase,
     {

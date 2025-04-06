@@ -8,7 +8,7 @@ export class ClientsController {
 
   @Post()
   async create(@Body() dto: CreateClientDto) {
-    const client = await this.createClient.execute(dto.number);
+    const client = await this.createClient.execute(dto.number, dto.name);
     return {
       id: client.id,
       number: client.number,

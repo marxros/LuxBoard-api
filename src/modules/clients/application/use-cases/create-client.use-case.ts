@@ -10,8 +10,8 @@ export class CreateClientUseCase {
     private readonly clientRepo: ClientRepository,
   ) {}
 
-  async execute(number: string): Promise<Client> {
-    const client = new Client(randomUUID(), number);
+  async execute(number: string, name: string): Promise<Client> {
+    const client = new Client(randomUUID(), number, name);
     await this.clientRepo.create(client);
     return client;
   }

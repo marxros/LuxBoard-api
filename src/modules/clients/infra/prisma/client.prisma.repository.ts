@@ -7,8 +7,13 @@ import { ClientRepository } from '../../domain/repositories/client.repository';
 export class ClientPrismaRepository implements ClientRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(client: Client): Promise<void> {
-    await this.prisma.client.create({ data: client });
+  async create(client: Client): Promise<Client> {
+    try {
+      const result = await this.prisma.client.create({ data: client });
+      return result;
+    } catch (error) {
+      console.log('error', error);
+    }
   }
 
   async findByNumber(number: string): Promise<Client | null> {
@@ -17,7 +22,7 @@ export class ClientPrismaRepository implements ClientRepository {
     });
 
     return result
-      ? new Client(result.id, result.number, result.createdAt)
+      ? new Client(result.id, result.number, result.name, result.createdAt)
       : null;
   }
 }

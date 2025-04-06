@@ -28,9 +28,12 @@ export class ProcessInvoiceUseCase {
 
     let client = await this.clientRepo.findByNumber(data.clientNumber);
     if (!client) {
-      client = new Client(randomUUID(), data.clientNumber);
-      await this.clientRepo.create(client);
+      client = new Client(randomUUID(), data.clientNumber, data.clientName);
+      const result = await this.clientRepo.create(client);
+      console.log('result', result);
     }
+
+    console.log('client', client);
 
     const referenceDate = this.parseMonth(data.referenceMonth);
 

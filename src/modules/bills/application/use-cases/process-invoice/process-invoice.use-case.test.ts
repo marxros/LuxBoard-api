@@ -43,6 +43,7 @@ describe('ProcessInvoiceUseCase', () => {
     const buffer = Buffer.from('test-data');
     const parsedData = {
       clientNumber: '12345',
+      clientName: 'John Doe',
       energiaEletricaKwh: 100,
       energiaEletricaValor: 200,
       energiaSceeKwh: 50,
@@ -72,6 +73,7 @@ describe('ProcessInvoiceUseCase', () => {
     const buffer = Buffer.from('test-data');
     const parsedData = {
       clientNumber: '12345',
+      clientName: 'John Doe',
       energiaEletricaKwh: 100,
       energiaEletricaValor: 200,
       energiaSceeKwh: 50,
@@ -82,7 +84,11 @@ describe('ProcessInvoiceUseCase', () => {
       referenceMonth: 'JAN/2023',
     };
 
-    const existingClient = new Client(randomUUID(), parsedData.clientNumber);
+    const existingClient = new Client(
+      randomUUID(),
+      parsedData.clientNumber,
+      parsedData.clientName,
+    );
 
     parserMock.parse.mockResolvedValue(parsedData);
     clientRepoMock.findByNumber.mockResolvedValue(existingClient);
@@ -103,6 +109,7 @@ describe('ProcessInvoiceUseCase', () => {
     const buffer = Buffer.from('test-data');
     const parsedData = {
       clientNumber: '12345',
+      clientName: 'John Doe',
       energiaEletricaKwh: 100,
       energiaEletricaValor: 200,
       energiaSceeKwh: 50,

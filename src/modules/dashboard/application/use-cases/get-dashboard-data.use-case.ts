@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GetDashboardDataDto } from '../dto/get-dashboard-data.dto';
 import { PrismaService } from '@/shared/prisma.service';
-import { subMonths } from 'date-fns';
+import { subMonths, startOfMonth, endOfMonth } from 'date-fns';
 
 @Injectable()
 export class GetDashboardDataUseCase {
@@ -29,13 +29,21 @@ export class GetDashboardDataUseCase {
     }
 
     if (start || end) {
-      const startDate = start ? new Date(start) : subMonths(new Date(), 6);
-      const endDate = end ? new Date(end) : new Date();
+      const startDate = start
+        ? startOfMonth(new Date(start))
+        : subMonths(new Date(), 6);
+      const endDate = end ? endOfMonth(new Date(end)) : new Date();
 
       where.referenceMonth = {
         gte: startDate,
         lte: endDate,
       };
+
+      console.log({
+        clientId: client?.id,
+        startDate,
+        endDate,
+      });
     }
 
     const bills = await this.prisma.bill.findMany({
@@ -43,12 +51,38 @@ export class GetDashboardDataUseCase {
       orderBy: { referenceMonth: 'asc' },
     });
 
-    const monthly = bills.map((bill) => ({
-      month: `${bill.referenceMonth.getMonth() + 1}/${bill.referenceMonth.getFullYear()}`,
-      energiaConsumidaKwh: bill.energiaEletricaKwh + bill.energiaSceeKwh,
-      energiaCompensadaKwh: bill.energiaCompensadaKwh,
-      valorTotalSemGD: bill.valorTotalSemGD,
-      economiaGD: bill.economiaGD,
+    const grouped: Record<
+      string,
+      {
+        energiaConsumidaKwh: number;
+        energiaCompensadaKwh: number;
+        valorTotalSemGD: number;
+        economiaGD: number;
+      }
+    > = {};
+
+    for (const bill of bills) {
+      const key = `${bill.referenceMonth.getMonth() + 1}/${bill.referenceMonth.getFullYear()}`;
+
+      if (!grouped[key]) {
+        grouped[key] = {
+          energiaConsumidaKwh: 0,
+          energiaCompensadaKwh: 0,
+          valorTotalSemGD: 0,
+          economiaGD: 0,
+        };
+      }
+
+      grouped[key].energiaConsumidaKwh +=
+        bill.energiaEletricaKwh + bill.energiaSceeKwh;
+      grouped[key].energiaCompensadaKwh += bill.energiaCompensadaKwh;
+      grouped[key].valorTotalSemGD += bill.valorTotalSemGD;
+      grouped[key].economiaGD += bill.economiaGD;
+    }
+
+    const monthly = Object.entries(grouped).map(([month, values]) => ({
+      month,
+      ...values,
     }));
 
     const summary = {

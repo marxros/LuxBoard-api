@@ -1,5 +1,6 @@
 export interface ParsedInvoiceData {
   clientNumber: string;
+  clientName: string;
   referenceMonth: string;
   energiaEletricaKwh: number;
   energiaEletricaValor: number;
