@@ -35,6 +35,7 @@ export class CreateBillUseCase {
       consumoTotal,
       valorTotalSemGD,
       economiaGD,
+      data.filePath,
     );
 
     await this.billRepository.create(bill);

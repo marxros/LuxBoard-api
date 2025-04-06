@@ -56,4 +56,26 @@ export class BillPrismaRepository implements BillRepository {
       },
     });
   }
+
+  async findById(id: string): Promise<Bill | null> {
+    const data = await this.prisma.bill.findUnique({ where: { id } });
+    if (!data) return null;
+
+    return new Bill(
+      data.id,
+      data.clientId,
+      data.referenceMonth,
+      data.energiaEletricaKwh,
+      data.energiaEletricaValor,
+      data.energiaSceeKwh,
+      data.energiaSceeValor,
+      data.energiaCompensadaKwh,
+      data.energiaCompensadaValor,
+      data.contribIlumPublicaValor,
+      data.consumoTotal,
+      data.valorTotalSemGD,
+      data.economiaGD,
+      data.filePath,
+    );
+  }
 }

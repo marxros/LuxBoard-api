@@ -5,6 +5,7 @@ import { BillRepository } from '../../../domain/repositories/bill.repository';
 import { Client } from '@/modules/clients/domain/entities/client.entity';
 import { Bill } from '../../../domain/entities/bill.entity';
 import { randomUUID } from 'crypto';
+import { InvoiceStorage } from '@/modules/bills/domain/services/invoice-storage.interface';
 
 @Injectable()
 export class ProcessInvoiceUseCase {
@@ -12,11 +13,11 @@ export class ProcessInvoiceUseCase {
     @Inject('InvoiceParser') private readonly parser: InvoiceParser,
     @Inject('ClientRepository') private readonly clientRepo: ClientRepository,
     @Inject('BillRepository') private readonly billRepo: BillRepository,
+    @Inject('InvoiceStorage') private readonly storage: InvoiceStorage,
   ) {}
 
   async execute(buffer: Buffer): Promise<{ client: Client; bill: Bill }> {
     const data = await this.parser.parse(buffer);
-    console.log('data', data);
 
     if (!data.clientNumber?.trim()) {
       throw new BadRequestException('Número do cliente não encontrado no PDF.');
@@ -33,9 +34,13 @@ export class ProcessInvoiceUseCase {
       console.log('result', result);
     }
 
-    console.log('client', client);
-
     const referenceDate = this.parseMonth(data.referenceMonth);
+
+    const filePath = await this.storage.save(
+      buffer,
+      data.clientNumber,
+      referenceDate.toISOString(),
+    );
 
     const existingBill = await this.billRepo.findByClientAndMonth(
       client.id,
@@ -64,6 +69,7 @@ export class ProcessInvoiceUseCase {
         consumoTotal,
         valorTotalSemGD,
         economiaGD,
+        filePath,
       );
 
       await this.billRepo.update(updatedBill);
@@ -84,6 +90,7 @@ export class ProcessInvoiceUseCase {
       consumoTotal,
       valorTotalSemGD,
       economiaGD,
+      filePath,
     );
 
     await this.billRepo.create(bill);

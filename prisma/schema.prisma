@@ -37,4 +37,5 @@ model Bill {
   valorTotalSemGD         Float
   economiaGD              Float
   createdAt               DateTime @default(now())
+  filePath                String?
 }

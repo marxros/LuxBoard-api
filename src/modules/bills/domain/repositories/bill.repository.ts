@@ -8,4 +8,5 @@ export abstract class BillRepository {
     referenceMonth: Date,
   ): Promise<Bill | null>;
   abstract update(bill: Bill): Promise<void>;
+  abstract findById(id: string): Promise<Bill | null>;
 }

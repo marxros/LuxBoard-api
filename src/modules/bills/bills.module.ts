@@ -8,6 +8,8 @@ import { PdfInvoiceParserService } from './infra/services/pdf-invoice-parser.ser
 import { ProcessInvoiceUseCase } from './application/use-cases/process-invoice/process-invoice.use-case';
 import { ClientPrismaRepository } from '../clients/infra/prisma/client.prisma.repository';
 import { GetBillsUseCase } from './application/use-cases/get-bill/get-bills.use-case';
+import { LocalInvoiceStorageService } from './infra/storage/invoice-storage.service';
+import { DownloadInvoiceUseCase } from './application/use-cases/download-invoice/download-invoice.use-case';
 
 @Module({
   controllers: [BillsController, InvoicesController],
@@ -17,6 +19,7 @@ import { GetBillsUseCase } from './application/use-cases/get-bill/get-bills.use-
     GetBillsUseCase,
     PdfInvoiceParserService,
     ProcessInvoiceUseCase,
+    DownloadInvoiceUseCase,
     {
       provide: 'BillRepository',
       useClass: BillPrismaRepository,
@@ -28,6 +31,10 @@ import { GetBillsUseCase } from './application/use-cases/get-bill/get-bills.use-
     {
       provide: 'InvoiceParser',
       useClass: PdfInvoiceParserService,
+    },
+    {
+      provide: 'InvoiceStorage',
+      useClass: LocalInvoiceStorageService,
     },
   ],
 })

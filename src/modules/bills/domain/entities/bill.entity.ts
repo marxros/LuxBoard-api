@@ -13,5 +13,6 @@ export class Bill {
     public readonly consumoTotal: number,
     public readonly valorTotalSemGD: number,
     public readonly economiaGD: number,
+    public readonly filePath?: string,
   ) {}
 }
