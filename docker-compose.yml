@@ -25,7 +25,6 @@ services:
     environment:
       DATABASE_URL: 'postgresql://postgres:postgres@db:5432/lumi?schema=public'
     volumes:
-      - .:/app
       - /app/node_modules
 
 volumes:
